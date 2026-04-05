@@ -1,0 +1,1153 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bitcoinová škola – Tvoja osobná cesta</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg:          #0a0a0b;
+      --surface:     #111113;
+      --surface2:    #18181c;
+      --border:      #222228;
+      --accent:      #f7931a;
+      --accent-glow: rgba(247,147,26,0.10);
+      --accent-line: rgba(247,147,26,0.25);
+      --accent-dim:  rgba(247,147,26,0.15);
+      --text:        #f0ebe0;
+      --text-soft:   #90909c;
+      --text-dim:    #56566a;
+      --warn:        rgba(255,200,90,0.9);
+      --warn-bg:     rgba(255,200,90,0.06);
+      --warn-line:   rgba(255,200,90,0.2);
+      --green:       rgba(100,210,140,0.9);
+      --green-bg:    rgba(100,210,140,0.06);
+      --green-line:  rgba(100,210,140,0.2);
+      --blue:        rgba(130,160,255,0.9);
+      --blue-bg:     rgba(100,140,255,0.06);
+      --blue-line:   rgba(100,140,255,0.2);
+      --radius:      16px;
+      --radius-sm:   10px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg); color: var(--text);
+      font-family: 'DM Sans', sans-serif; font-weight: 300;
+      min-height: 100vh; overflow-x: hidden; -webkit-font-smoothing: antialiased;
+    }
+    .glow-orb {
+      position: fixed; width: 700px; height: 700px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(247,147,26,0.05) 0%, transparent 65%);
+      top: -200px; right: -180px; pointer-events: none; z-index: 0;
+    }
+    .glow-orb-2 {
+      position: fixed; width: 500px; height: 500px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(100,120,255,0.025) 0%, transparent 65%);
+      bottom: -150px; left: -120px; pointer-events: none; z-index: 0;
+    }
+    .container { max-width: 560px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 1; }
+    section { display: none; min-height: 100dvh; flex-direction: column; justify-content: center; padding: 64px 0; }
+    section.active { display: flex; }
+
+    @keyframes fadeUp { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
+    .anim { animation: fadeUp 0.45s ease both; }
+    .anim-1{animation-delay:.00s} .anim-2{animation-delay:.07s} .anim-3{animation-delay:.14s}
+    .anim-4{animation-delay:.21s} .anim-5{animation-delay:.28s} .anim-6{animation-delay:.35s}
+    .anim-7{animation-delay:.42s} .anim-8{animation-delay:.49s}
+
+    /* ── Badge ── */
+    .badge {
+      display: inline-flex; align-items: center; gap: 7px;
+      font-size: 10.5px; font-weight: 500; letter-spacing: 2px; text-transform: uppercase;
+      color: var(--accent); border: 1px solid var(--accent-line); border-radius: 100px; padding: 6px 14px;
+    }
+    .badge-dot { width:5px; height:5px; border-radius:50%; background:var(--accent); animation:pulse 2s ease infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+    /* ── Buttons ── */
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 10px;
+      background: var(--accent); color: #0a0a0b;
+      font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 500;
+      padding: 15px 30px; border-radius: 100px; border: none; cursor: pointer;
+      transition: background 0.2s, transform 0.15s; width: fit-content;
+    }
+    .btn-primary:hover { background: #ffaa40; transform: translateY(-1px); }
+
+    /* ── HERO ── */
+    #hero { padding: 60px 0 80px; }
+    h1.hero-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(38px,9vw,54px); font-weight: 700;
+      line-height: 1.08; letter-spacing: -0.5px; margin-bottom: 22px;
+    }
+    h1.hero-title em { font-style: normal; color: var(--accent); }
+    .hero-sub { font-size: 17px; line-height: 1.68; color: var(--text-soft); max-width: 420px; margin-bottom: 36px; }
+    .hero-list { display: flex; flex-direction: column; gap: 11px; margin-bottom: 38px; }
+    .hero-list-item { display: flex; align-items: center; gap: 11px; font-size: 14px; color: var(--text-soft); }
+    .hero-check {
+      width: 20px; height: 20px; border-radius: 50%;
+      background: var(--accent-glow); border: 1px solid var(--accent-line);
+      color: var(--accent); font-size: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .hero-footer { margin-top: 38px; padding-top: 24px; border-top: 1px solid var(--border); font-size: 12px; color: var(--text-dim); line-height: 1.65; }
+
+    /* ── EMAIL GATE ── */
+    .gate-eyebrow { font-size: 10.5px; font-weight: 500; letter-spacing: 2px; text-transform: uppercase; color: var(--accent); margin-bottom: 18px; }
+    .gate-title { font-family: 'Playfair Display', serif; font-size: clamp(26px,6vw,36px); font-weight: 700; line-height: 1.15; margin-bottom: 12px; }
+    .gate-sub { font-size: 15px; color: var(--text-soft); line-height: 1.65; margin-bottom: 28px; }
+    .gate-fields { display: flex; flex-direction: column; gap: 10px; }
+    .gate-input {
+      width: 100%; background: var(--surface2); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); padding: 15px 18px; color: var(--text);
+      font-family: 'DM Sans', sans-serif; font-size: 15px; outline: none;
+      transition: border-color 0.18s; -webkit-appearance: none;
+    }
+    .gate-input::placeholder { color: var(--text-dim); }
+    .gate-input:focus { border-color: var(--accent-line); }
+    .gate-input.error { border-color: rgba(255,90,90,0.5); }
+    .btn-gate {
+      background: var(--accent); color: #0a0a0b;
+      font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 500;
+      padding: 15px 28px; border-radius: 100px; border: none; cursor: pointer;
+      transition: background 0.18s; align-self: flex-start; margin-top: 4px;
+    }
+    .btn-gate:hover { background: #ffaa40; }
+    .gate-note { font-size: 11px; color: var(--text-dim); margin-top: 14px; line-height: 1.6; }
+
+    /* ── PROGRESS ── */
+    .progress-wrap { margin-bottom: 44px; }
+    .progress-bar { width: 100%; height: 2px; background: var(--border); border-radius: 2px; overflow: hidden; margin-bottom: 10px; }
+    .progress-fill {
+      height: 100%; background: linear-gradient(90deg, var(--accent) 0%, #ffcc66 100%);
+      border-radius: 2px; transition: width 0.45s cubic-bezier(0.4,0,0.2,1);
+    }
+    .progress-label { font-size: 11px; letter-spacing: 1.8px; text-transform: uppercase; color: var(--text-dim); }
+
+    /* ── QUESTIONS ── */
+    .q-text { font-family: 'Playfair Display', serif; font-size: clamp(22px,5.5vw,30px); font-weight: 400; line-height: 1.28; margin-bottom: 10px; }
+    .q-hint { font-size: 13px; color: var(--text-dim); margin-bottom: 24px; line-height: 1.5; }
+
+    .text-input {
+      width: 100%; background: var(--surface2); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); padding: 16px 18px; color: var(--text);
+      font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 300;
+      outline: none; transition: border-color 0.18s; resize: none;
+      -webkit-appearance: none; line-height: 1.6;
+    }
+    .text-input::placeholder { color: var(--text-dim); }
+    .text-input:focus { border-color: var(--accent-line); }
+    textarea.text-input { min-height: 110px; }
+
+    /* ── CHOICE BUTTONS WITH BADGES ── */
+    .choices { display: flex; flex-direction: column; gap: 10px; }
+    .choice-btn {
+      width: 100%; text-align: left; background: var(--surface2); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); padding: 14px 18px; color: var(--text);
+      font-family: 'DM Sans', sans-serif; font-size: 14.5px; font-weight: 300; cursor: pointer;
+      transition: border-color 0.18s, background 0.18s;
+      display: flex; align-items: center; gap: 12px;
+      position: relative;
+    }
+    .choice-btn:hover { border-color: var(--accent-line); background: var(--accent-glow); }
+    .choice-btn.selected { border-color: var(--accent); background: var(--accent-glow); }
+    .choice-dot {
+      width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid var(--text-dim);
+      flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.18s;
+    }
+    .choice-btn.selected .choice-dot { background: var(--accent); border-color: var(--accent); }
+    .choice-btn.selected .choice-dot::after { content: ''; width: 6px; height: 6px; border-radius: 50%; background: #0a0a0b; }
+
+    /* Option tag (badge) */
+    .opt-tag {
+      position: absolute; top: 8px; right: 10px;
+      font-size: 8px; font-weight: 500; letter-spacing: 1.2px; text-transform: uppercase;
+      padding: 3px 8px; border-radius: 100px; line-height: 1;
+    }
+    .tag-privacy { background: var(--blue-bg); color: var(--blue); border: 1px solid var(--blue-line); }
+    .tag-price   { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-line); }
+    .tag-comfort { background: var(--accent-glow); color: var(--accent); border: 1px solid var(--accent-dim); }
+
+    /* Has tag = more padding-right */
+    .choice-btn.has-tag { padding-right: 80px; }
+
+    /* Custom text input below choices */
+    .custom-input-wrap { margin-top: 6px; display: none; }
+    .custom-input-wrap.visible { display: block; }
+    .custom-text {
+      width: 100%; background: var(--surface2); border: 1px solid var(--accent-line);
+      border-radius: var(--radius-sm); padding: 13px 16px; color: var(--text);
+      font-family: 'DM Sans', sans-serif; font-size: 14.5px; font-weight: 300;
+      outline: none; line-height: 1.5; resize: none; min-height: 80px;
+      -webkit-appearance: none;
+    }
+    .custom-text::placeholder { color: var(--text-dim); }
+
+    /* KYC inline warning */
+    .kyc-inline-warn {
+      display: none; margin-top: 10px;
+      background: var(--warn-bg); border: 1px solid var(--warn-line);
+      border-radius: var(--radius-sm); padding: 13px 16px;
+      font-size: 13px; color: var(--text-soft); line-height: 1.6;
+    }
+    .kyc-inline-warn.visible { display: block; }
+    .kyc-inline-warn strong { color: var(--warn); font-weight: 500; }
+
+    /* Nav */
+    .quiz-nav { margin-top: 24px; display: flex; align-items: center; gap: 16px; }
+    .btn-next {
+      background: var(--accent); color: #0a0a0b; font-family: 'DM Sans', sans-serif;
+      font-size: 14px; font-weight: 500; padding: 13px 26px; border-radius: 100px; border: none;
+      cursor: pointer; transition: background 0.18s, opacity 0.18s; opacity: 0.4; pointer-events: none;
+    }
+    .btn-next.ready { opacity: 1; pointer-events: auto; }
+    .btn-next.ready:hover { background: #ffaa40; }
+    .btn-back {
+      background: transparent; color: var(--text-dim); font-family: 'DM Sans', sans-serif;
+      font-size: 14px; border: none; cursor: pointer; padding: 13px 0; transition: color 0.18s;
+    }
+    .btn-back:hover { color: var(--text-soft); }
+
+    /* LOADING */
+    #loading { text-align: center; }
+    .loading-ring {
+      width: 56px; height: 56px; border-radius: 50%;
+      border: 2px solid var(--border); border-top-color: var(--accent);
+      animation: spin 0.9s linear infinite; margin: 0 auto 30px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    #loading h2 { font-family: 'Playfair Display', serif; font-size: 26px; margin-bottom: 12px; }
+    #loading p { font-size: 15px; color: var(--text-soft); line-height: 1.65; max-width: 320px; margin: 0 auto; }
+
+    /* ══ RESULT ══ */
+    .result-eyebrow { font-size: 10.5px; font-weight: 500; letter-spacing: 2px; text-transform: uppercase; color: var(--accent); margin-bottom: 14px; }
+    h2.result-title { font-family: 'Playfair Display', serif; font-size: clamp(28px,6vw,40px); font-weight: 700; line-height: 1.12; margin-bottom: 18px; }
+    .path-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--accent-glow); border: 1px solid var(--accent-line);
+      border-radius: 100px; padding: 7px 16px; margin-bottom: 22px;
+      font-size: 12px; font-weight: 500; color: var(--accent);
+    }
+
+    /* All result cards — orange warm tint */
+    .rcard {
+      border-radius: var(--radius); padding: 22px 24px; margin-bottom: 12px;
+      background: linear-gradient(135deg, #15130f 0%, #111113 100%);
+      border: 1px solid var(--accent-dim);
+    }
+    .rcard-warn  { background: var(--warn-bg);  border-color: var(--warn-line);  }
+    .rcard-green { background: var(--green-bg); border-color: var(--green-line); }
+
+    .rlabel { font-size: 10px; font-weight: 500; letter-spacing: 1.8px; text-transform: uppercase; margin-bottom: 13px; color: var(--accent); }
+    .rlabel.warn  { color: var(--warn); }
+    .rlabel.green { color: var(--green); }
+
+    .rtext { font-size: 15px; line-height: 1.72; color: var(--text-soft); }
+    .rtext strong { color: var(--text); font-weight: 500; }
+
+    /* Metrics 2-col */
+    .metric-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+    .metric-box {
+      background: linear-gradient(135deg, #15130f 0%, #111113 100%);
+      border: 1px solid var(--accent-dim); border-radius: var(--radius-sm); padding: 16px 18px;
+    }
+    .metric-label { font-size: 9px; font-weight: 500; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-dim); margin-bottom: 8px; }
+    .metric-value { font-size: 14px; font-weight: 400; color: var(--text); line-height: 1.4; margin-bottom: 5px; }
+    .metric-reason { font-size: 11.5px; color: var(--text-dim); line-height: 1.45; }
+
+    /* Steps */
+    .steps-list { list-style: none; display: flex; flex-direction: column; gap: 14px; }
+    .steps-list li { display: flex; gap: 13px; align-items: flex-start; font-size: 14.5px; line-height: 1.58; color: var(--text); }
+    .step-num {
+      width: 22px; height: 22px; border-radius: 50%; background: var(--accent-glow);
+      border: 1px solid var(--accent-line); color: var(--accent); font-size: 10px; font-weight: 500;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px;
+    }
+
+    /* ══ MASTERCLASS CARD ══ */
+    .master-card { border-radius: var(--radius); border: 1px solid var(--accent-line); overflow: hidden; margin-bottom: 12px; }
+    .master-top {
+      background: linear-gradient(135deg, rgba(247,147,26,0.12) 0%, rgba(247,147,26,0.04) 100%);
+      padding: 26px 24px 20px;
+    }
+    .master-eyebrow { font-size: 10px; font-weight: 500; letter-spacing: 1.8px; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; }
+    .master-title { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; margin-bottom: 10px; line-height: 1.2; color: var(--text); }
+    .master-sub { font-size: 14px; color: var(--text-soft); line-height: 1.65; }
+
+    .master-divider { height: 1px; background: var(--accent-dim); }
+
+    .master-middle { padding: 20px 24px; background: #0f0d0a; }
+    .master-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+    .master-list li { display: flex; align-items: flex-start; gap: 10px; font-size: 13.5px; color: var(--text-soft); line-height: 1.5; }
+    .master-check { color: var(--accent); font-size: 13px; flex-shrink: 0; margin-top: 1px; }
+
+    .master-bottom { padding: 20px 24px 24px; background: #0d0b09; border-top: 1px solid var(--accent-dim); }
+    .master-price-row { display: flex; align-items: center; gap: 16px; margin-bottom: 16px; }
+    .price-amount { font-size: 36px; font-weight: 500; color: var(--accent); font-family: 'DM Sans', sans-serif; line-height: 1; white-space: nowrap; }
+    .price-details { font-size: 12.5px; color: var(--text-dim); line-height: 1.6; }
+    .price-details strong { color: var(--text-soft); font-weight: 400; }
+    .btn-master {
+      display: block; width: 100%;
+      background: var(--accent); color: #0a0a0b;
+      font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 500;
+      padding: 16px; border-radius: 100px; border: none; cursor: pointer;
+      transition: background 0.18s; text-align: center; text-decoration: none;
+      margin-bottom: 12px;
+    }
+    .btn-master:hover { background: #ffaa40; }
+    .master-guarantee {
+      display: flex; align-items: flex-start; gap: 10px;
+      background: rgba(247,147,26,0.05); border: 1px solid var(--accent-dim);
+      border-radius: var(--radius-sm); padding: 12px 14px;
+    }
+    .guarantee-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+    .guarantee-text { font-size: 11.5px; color: var(--text-dim); line-height: 1.55; }
+    .guarantee-text strong { color: var(--text-soft); font-weight: 500; }
+
+    .disclaimer { border-top: 1px solid var(--border); padding-top: 22px; margin-top: 10px; font-size: 11px; color: var(--text-dim); line-height: 1.7; text-align: center; }
+
+    /* SUCCESS */
+    #success { text-align: center; }
+    .success-ring { width: 72px; height: 72px; border-radius: 50%; background: var(--accent-glow); border: 1px solid var(--accent-line); display: flex; align-items: center; justify-content: center; font-size: 26px; margin: 0 auto 28px; }
+    #success h2 { font-family: 'Playfair Display', serif; font-size: clamp(26px,6vw,36px); margin-bottom: 12px; }
+    #success p { font-size: 15px; color: var(--text-soft); line-height: 1.65; max-width: 360px; margin: 0 auto 34px; }
+
+    @media (max-width: 400px) {
+      textarea.text-input { font-size: 14px; }
+      .rcard, .master-top, .master-middle, .master-bottom { padding-left: 18px; padding-right: 18px; }
+      .metric-row { grid-template-columns: 1fr; }
+      .choice-btn.has-tag { padding-right: 70px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="glow-orb"></div>
+<div class="glow-orb-2"></div>
+
+<!-- HERO -->
+<section id="hero" class="active">
+  <div class="container">
+    <div class="anim anim-1" style="margin-bottom:30px;">
+      <span class="badge"><span class="badge-dot"></span>Bitcoinová škola · AI sprievodca</span>
+    </div>
+    <h1 class="hero-title anim anim-2">Tvoja osobná<br /><em>Bitcoin</em> cesta.</h1>
+    <p class="hero-sub anim anim-3">
+      V nasledujúcich minútach dostaneš personalizované odporúčanie na tvoju cestu.
+    </p>
+    <div class="hero-list anim anim-4">
+      <div class="hero-list-item"><span class="hero-check">✓</span>Odpovedáš vlastnými slovami</div>
+      <div class="hero-list-item"><span class="hero-check">✓</span>AI vyhodnotí tvoju situáciu a navrhne konkrétny smer</div>
+      <div class="hero-list-item"><span class="hero-check">✓</span>Trvá to 3–5 minút</div>
+    </div>
+    <button class="btn-primary anim anim-5" onclick="showSection('emailgate')">Začať &nbsp;→</button>
+    <div class="hero-footer anim anim-6">Žiadna finančná rada. Len jasný, personalizovaný smer.</div>
+  </div>
+</section>
+
+<!-- EMAIL GATE -->
+<section id="emailgate">
+  <div class="container">
+    <div class="gate-eyebrow anim anim-1">Pred testom</div>
+    <h2 class="gate-title anim anim-2">Kam ti pošleme výsledok?</h2>
+    <p class="gate-sub anim anim-3">
+      Zadaj meno a email — tvoj personalizovaný plán ti pošleme priamo do inboxu.
+    </p>
+    <div class="gate-fields anim anim-4">
+      <input type="text"  class="gate-input" id="gateName"  placeholder="Tvoje krstné meno" autocomplete="given-name" />
+      <input type="email" class="gate-input" id="gateEmail" placeholder="tvoj@email.com"     autocomplete="email" />
+      <button class="btn-gate" onclick="startQuiz()">Začať test &nbsp;→</button>
+    </div>
+    <p class="gate-note anim anim-5">Bez spamu. Kedykoľvek sa môžeš odhlásiť.</p>
+  </div>
+</section>
+
+<!-- QUIZ -->
+<section id="quiz">
+  <div class="container">
+    <div class="progress-wrap anim anim-1">
+      <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+      <div class="progress-label" id="progressLabel"></div>
+    </div>
+    <div class="q-text anim anim-2" id="qText"></div>
+    <div class="q-hint anim anim-3" id="qHint"></div>
+    <div id="qInput" class="anim anim-3"></div>
+    <div class="quiz-nav anim anim-4">
+      <button class="btn-next" id="btnNext" onclick="nextQ()">Ďalej →</button>
+      <button class="btn-back" id="btnBack" onclick="prevQ()" style="visibility:hidden">← Späť</button>
+    </div>
+  </div>
+</section>
+
+<!-- LOADING -->
+<section id="loading">
+  <div class="container" style="align-items:center; text-align:center;">
+    <div class="loading-ring anim anim-1"></div>
+    <h2 class="anim anim-2" id="loadingTitle">Analyzujem tvoju situáciu…</h2>
+    <p class="anim anim-3" id="loadingText">AI pripravuje personalizované odporúčanie. Zvyčajne 10–20 sekúnd.</p>
+  </div>
+</section>
+
+<!-- RESULT -->
+<section id="result">
+  <div class="container">
+    <div class="result-eyebrow anim anim-1">Tvoja osobná cesta</div>
+    <h2 class="result-title anim anim-2" id="rTitle"></h2>
+    <div class="anim anim-2" id="rPathBadge"></div>
+
+    <!-- 1. Uznanie -->
+    <div class="rcard anim anim-3" id="rIntro"></div>
+
+    <!-- 2. Metriky -->
+    <div class="metric-row anim anim-3" id="rMetrics"></div>
+
+    <!-- 3. Cesta -->
+    <div class="rcard anim anim-4" id="rPath"></div>
+
+    <!-- 4. KYC info (green) -->
+    <div class="rcard rcard-green anim anim-4" id="rKyc" style="display:none;"></div>
+
+    <!-- 5. Kroky -->
+    <div class="rcard anim anim-5" id="rStepsCard">
+      <div class="rlabel">Čo odporúčam urobiť</div>
+      <ul class="steps-list" id="rSteps"></ul>
+    </div>
+
+    <!-- 6. Varovanie -->
+    <div class="rcard rcard-warn anim anim-6" id="rWarn"></div>
+
+    <!-- 7. Lepšia cesta -->
+    <div class="rcard rcard-green anim anim-6" id="rBetter" style="display:none;"></div>
+
+    <!-- 8. MASTERCLASS -->
+    <div class="master-card anim anim-7">
+      <div class="master-top">
+        <div class="master-eyebrow">Chceš to prejsť bezpečne, krok za krokom?</div>
+        <h3 class="master-title">Masterclass Bitcoinová škola</h3>
+        <p class="master-sub">
+          Tento plán ti ukazuje smer. Ale vedieť smer a vedieť ísť bezpečne sú dve rôzne veci.
+          Masterclass je 3-dňový program kde prejdeme spolu od nuly po prvý bezpečne kúpený a uložený Bitcoin.
+        </p>
+      </div>
+      <div class="master-divider"></div>
+      <div class="master-middle">
+        <ul class="master-list">
+          <li><span class="master-check">✓</span>Kde a ako Bitcoin kúpiť bezpečne — KYC aj non-KYC cesty</li>
+          <li><span class="master-check">✓</span>Ako ho uložiť tak aby bol naozaj tvoj — self-custody v praxi</li>
+          <li><span class="master-check">✓</span>Čoho sa vyvarovať — scamy, burzy, seed phrase chyby</li>
+          <li><span class="master-check">✓</span>Odpoviem na akékoľvek tvoje otázky — priamo, bez filtra</li>
+        </ul>
+      </div>
+      <div class="master-bottom">
+        <div class="master-price-row">
+          <div class="price-amount">500 €</div>
+          <div class="price-details">
+            <strong>jednorazovo</strong><br />
+            3 dni × 3 hodiny · online alebo osobne
+          </div>
+        </div>
+        <a id="masterBtn" href="#" class="btn-master">Mám záujem o Masterclass &nbsp;→</a>
+        <div class="master-guarantee">
+          <span class="guarantee-icon">🛡</span>
+          <p class="guarantee-text">
+            <strong>60-dňová garancia vrátenia peňazí.</strong>
+            Ak po absolvovaní celého programu stále nebudeš vedieť suverenne kúpiť a uložiť Bitcoin — vrátim ti celých 500 €.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <p class="disclaimer anim anim-8">
+      Toto nie je finančné poradenstvo. Všetky informácie sú výhradne vzdelávacieho charakteru. Každé rozhodnutie o nákupe Bitcoinu robíš na vlastnú zodpovednosť.
+    </p>
+  </div>
+</section>
+
+<!-- SUCCESS -->
+<section id="success">
+  <div class="container">
+    <div class="success-ring anim anim-1">✓</div>
+    <h2 class="anim anim-2">Všetko nastavené.</h2>
+    <p class="anim anim-3">Tvoj plán smeruje do inboxu. Ak ho nevidíš, skontroluj spam.</p>
+    <button class="btn-primary anim anim-4" onclick="location.reload()">Zopakovať test &nbsp;→</button>
+    <p class="disclaimer anim anim-5" style="margin-top:44px;">Toto nie je finančné poradenstvo.</p>
+  </div>
+</section>
+
+<script>
+const ANTHROPIC_KEY  = '';
+const BREVO_FORM_URL = 'https://62720115.sibforms.com/serve/MUIFADJV0PVNJaCmJpxpZrmnwYa_ULU4tXV1h4LcLwcKbix8Ga6Ia84JTF4X5pbcAKOl-50dn4q41R6UpIBnlL_MUwpB_v3xJwTelsCOIlQmgOf4BVQhjxujzPlOqJBXClAOYR79LK53hFtNC7wpa6f54hgytZEgRvOjgyHuXbfk5fMFoqS1nufKLHuYxXL3-QjuChcvgx763DAQ';
+
+/* ═══════════════════════════════
+   QUESTION DEFINITIONS
+═══════════════════════════════ */
+const TAG = { privacy:'privacy', price:'price', comfort:'comfort' };
+
+const staticQuestions = [
+  {
+    type:'text', key:'motivation',
+    text:'Čo ťa priviedlo k Bitcoinu práve teraz?',
+    hint:'Čo si čítal, počul alebo prežil?',
+    placeholder:'Napr. Peniaze mi strácajú hodnotu, kamarát o tom hovoril, hľadám kde bezpečne uchovať úspory...'
+  },
+  {
+    type:'text', key:'finances',
+    text:'Ako by si opísal svoju finančnú situáciu?',
+    hint:'Úprimnosť pomôže — len vďaka nej vieme navrhnúť realistický plán.',
+    placeholder:'Napr. Zarábam priemerne, mám malé úspory, každý mesiac mi zostane 100–200 €...'
+  },
+  {
+    type:'text', key:'fears',
+    text:'Čo ťa pri Bitcoine najviac straší alebo čomu nerozumieš?',
+    hint:'Žiadna otázka nie je hlúpa.',
+    placeholder:'Napr. Bojím sa straty peňazí, neviem kde bezpečne začať, počul som o hackoch a podvodoch...'
+  },
+  {
+    type:'text', key:'goals',
+    text:'Čo by si chcel dosiahnuť — za rok, za 5 rokov?',
+    hint:'Môže to byť finančný cieľ alebo len pocit slobody.',
+    placeholder:'Napr. Chrániť hodnotu toho čo zarábam, mať niečo bokom pre rodinu, väčšiu slobodu...'
+  },
+  {
+    type:'choice', key:'priority',
+    text:'Čo je pre teba pri Bitcoine najdôležitejšie?',
+    hint:'Pomôže nám to nastaviť správny smer.',
+    hasCustom: true,
+    customPlaceholder: 'Napíš čo je pre teba najdôležitejšie...',
+    options: [
+      { text: 'Súkromie — chcem zostať anonymný', tag: TAG.privacy },
+      { text: 'Cena — chcem platiť čo najmenej poplatkov', tag: TAG.price },
+      { text: 'Pohodlie — chcem to čo najjednoduchšie', tag: TAG.comfort },
+    ]
+  },
+  {
+    type:'choice', key:'budget',
+    text:'Koľko by si mohol mesačne vložiť do Bitcoinu?',
+    hint:'Orientačne — podľa toho navrhneme realistický plán.',
+    hasCustom: true,
+    customPlaceholder: 'Napíš svoju sumu alebo situáciu...',
+    options: [
+      { text: 'Menej ako 30 €', tag: null },
+      { text: '30 – 100 €',     tag: null },
+      { text: '100 – 300 €',    tag: null },
+      { text: 'Viac ako 300 €', tag: null },
+    ]
+  },
+  {
+    type:'choice', key:'privacy',
+    text:'Záleží ti na tom, či o tebe burza zbiera osobné údaje?',
+    hint:'KYC znamená, že burza vyžaduje doklad totožnosti a ukladá tvoje dáta.',
+    hasCustom: true,
+    customPlaceholder: 'Napíš vlastný pohľad na súkromie...',
+    kycWarnOnOptions: [1],
+    options: [
+      { text: 'Áno — radšej by som zostal anonymný', tag: TAG.privacy },
+      { text: 'Nie — nevadí mi dokladovať identitu', tag: TAG.comfort },
+      { text: 'Neviem čo to presne znamená',         tag: null },
+    ]
+  },
+  {
+    type:'choice', key:'experience',
+    text:'Kde sa teraz nachádzaš?',
+    hint:'',
+    hasCustom: true,
+    customPlaceholder: 'Opíš svoju situáciu vlastnými slovami...',
+    options: [
+      { text: 'Nikdy som Bitcoin nekupoval / nekupovala', tag: null },
+      { text: 'Mám ho na burze, ale neviem čo ďalej',    tag: null },
+      { text: 'Rozumiem základom, chcem ísť hlbšie',     tag: null },
+    ]
+  },
+  {
+    type:'choice', key:'custody',
+    text:'Čo ti znie prirodzenejšie?',
+    hint:'Nie je zlá odpoveď — každá nás nasmeruje správnym smerom.',
+    hasCustom: true,
+    customPlaceholder: 'Napíš ako to cítiš ty...',
+    options: [
+      { text: 'Chcem to jednoducho — nech to niekto spravuje za mňa', tag: TAG.comfort },
+      { text: 'Chcem mať Bitcoin naozaj vo svojich rukách',             tag: TAG.privacy },
+      { text: 'Neviem — chcem pochopiť rozdiel',                       tag: null },
+    ]
+  }
+  // Question index 9 = dynamic AI summary (added at runtime)
+];
+
+/* ═══════════════════════════════
+   STATE
+═══════════════════════════════ */
+let questions = [...staticQuestions];
+let current   = 0;
+let answers   = {};
+let userData  = { name:'', email:'' };
+let aiResult  = null;
+const CUSTOM_VAL = '__custom__';
+
+/* ═══════════════════════════════
+   HELPERS
+═══════════════════════════════ */
+function showSection(id) {
+  document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo({ top:0, behavior:'smooth' });
+}
+
+function tagClass(tag) {
+  if (!tag) return '';
+  if (tag === TAG.privacy) return 'tag-privacy';
+  if (tag === TAG.price)   return 'tag-price';
+  if (tag === TAG.comfort) return 'tag-comfort';
+  return '';
+}
+function tagLabel(tag) {
+  if (tag === TAG.privacy) return 'Súkromie';
+  if (tag === TAG.price)   return 'Cena';
+  if (tag === TAG.comfort) return 'Pohodlie';
+  return '';
+}
+
+/* ═══════════════════════════════
+   EMAIL GATE
+═══════════════════════════════ */
+function startQuiz() {
+  const nameEl  = document.getElementById('gateName');
+  const emailEl = document.getElementById('gateEmail');
+  const name    = nameEl.value.trim();
+  const email   = emailEl.value.trim();
+  nameEl.classList.remove('error'); emailEl.classList.remove('error');
+  if (!name)  { nameEl.classList.add('error');  nameEl.focus(); return; }
+  if (!email || !/\S+@\S+\.\S+/.test(email)) { emailEl.classList.add('error'); emailEl.focus(); return; }
+  userData.name  = name;
+  userData.email = email;
+  sendToBrevo('started');
+  current = 0; answers = {};
+  questions = [...staticQuestions]; // reset dynamic questions
+  showSection('quiz');
+  renderQ();
+}
+
+/* ═══════════════════════════════
+   RENDER QUESTION
+═══════════════════════════════ */
+function renderQ() {
+  const q   = questions[current];
+  const tot = questions.length + 1; // +1 for dynamic last Q
+  const pct = (current / tot) * 100;
+  document.getElementById('progressFill').style.width  = pct + '%';
+  document.getElementById('progressLabel').textContent = `Otázka ${current+1} z ${tot}`;
+  document.getElementById('qText').textContent         = q.text;
+  document.getElementById('qHint').textContent         = q.hint || '';
+  document.getElementById('btnBack').style.visibility  = current === 0 ? 'hidden' : 'visible';
+
+  const inputEl = document.getElementById('qInput');
+  inputEl.innerHTML = '';
+
+  if (q.type === 'text') {
+    const saved = answers[q.key] || '';
+    const el    = document.createElement('textarea');
+    el.className   = 'text-input';
+    el.placeholder = q.placeholder || '';
+    el.value       = saved;
+    el.addEventListener('input', () => { answers[q.key] = el.value.trim(); refreshBtn(); });
+    inputEl.appendChild(el);
+    setTimeout(() => el.focus(), 100);
+
+  } else if (q.type === 'dynamic') {
+    // AI-generated options
+    renderDynamicQ(q, inputEl);
+
+  } else {
+    // Choice with optional custom answer
+    const savedVal = answers[q.key] || null;
+    const isCustom = savedVal === CUSTOM_VAL;
+
+    const wrap = document.createElement('div');
+    wrap.className = 'choices';
+
+    q.options.forEach((opt, i) => {
+      const btn = document.createElement('button');
+      const isSelected = savedVal === opt.text;
+      btn.className = 'choice-btn' + (isSelected ? ' selected' : '') + (opt.tag ? ' has-tag' : '');
+      btn.innerHTML = `<span class="choice-dot"></span><span>${opt.text}</span>`;
+
+      if (opt.tag) {
+        const tagEl = document.createElement('span');
+        tagEl.className = 'opt-tag ' + tagClass(opt.tag);
+        tagEl.textContent = tagLabel(opt.tag);
+        btn.appendChild(tagEl);
+      }
+
+      btn.addEventListener('click', () => {
+        answers[q.key] = opt.text;
+        wrap.querySelectorAll('.choice-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        customWrap.classList.remove('visible');
+        customTa.value = '';
+        // KYC warning
+        if (q.kycWarnOnOptions && q.kycWarnOnOptions.includes(i)) {
+          kycWarn.classList.add('visible');
+        } else {
+          kycWarn.classList.remove('visible');
+        }
+        refreshBtn();
+        // Auto-advance for simple choice (no custom)
+        setTimeout(() => {
+          if (answers[q.key]) {
+            if (current < questions.length - 1) nextQ();
+            else generateSummaryQ();
+          }
+        }, 300);
+      });
+      wrap.appendChild(btn);
+    });
+
+    // Custom "vlastná odpoveď" option
+    if (q.hasCustom) {
+      const customBtn = document.createElement('button');
+      customBtn.className = 'choice-btn' + (isCustom ? ' selected' : '');
+      customBtn.innerHTML = `<span class="choice-dot"></span><span style="color:var(--text-dim)">Napísať vlastnú odpoveď…</span>`;
+      customBtn.addEventListener('click', () => {
+        wrap.querySelectorAll('.choice-btn').forEach(b => b.classList.remove('selected'));
+        customBtn.classList.add('selected');
+        answers[q.key] = CUSTOM_VAL;
+        kycWarn.classList.remove('visible');
+        customWrap.classList.add('visible');
+        setTimeout(() => customTa.focus(), 50);
+        refreshBtn();
+      });
+      wrap.appendChild(customBtn);
+    }
+
+    inputEl.appendChild(wrap);
+
+    // KYC inline warning
+    const kycWarn = document.createElement('div');
+    kycWarn.className = 'kyc-inline-warn';
+    kycWarn.innerHTML = `<strong>Pozor na KYC:</strong> Burza zbiera tvoje osobné údaje — meno, adresu, doklad. Tieto dáta môžu byť hacknuté (Coinbase 2024, Ledger 2020) alebo zdieľané s úradmi. Non-KYC alternatívy sú legálne a jednoduchšie ako väčšina ľudí myslí.`;
+    if (savedVal && q.kycWarnOnOptions) {
+      const savedIdx = q.options.findIndex(o => o.text === savedVal);
+      if (q.kycWarnOnOptions.includes(savedIdx)) kycWarn.classList.add('visible');
+    }
+    inputEl.appendChild(kycWarn);
+
+    // Custom textarea
+    const customWrap = document.createElement('div');
+    customWrap.className = 'custom-input-wrap' + (isCustom ? ' visible' : '');
+    const customTa = document.createElement('textarea');
+    customTa.className   = 'custom-text';
+    customTa.placeholder = q.customPlaceholder || 'Napíš vlastnú odpoveď...';
+    customTa.value       = (isCustom && answers[q.key + '_custom']) ? answers[q.key + '_custom'] : '';
+    customTa.addEventListener('input', () => {
+      answers[q.key + '_custom'] = customTa.value.trim();
+      refreshBtn();
+    });
+    customWrap.appendChild(customTa);
+    inputEl.appendChild(customWrap);
+  }
+
+  refreshBtn();
+}
+
+function renderDynamicQ(q, container) {
+  const savedVal = answers[q.key] || null;
+  const isCustom = savedVal === CUSTOM_VAL;
+
+  const wrap = document.createElement('div');
+  wrap.className = 'choices';
+
+  q.options.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'choice-btn' + (savedVal === opt ? ' selected' : '');
+    btn.innerHTML = `<span class="choice-dot"></span><span>${opt}</span>`;
+    btn.addEventListener('click', () => {
+      answers[q.key] = opt;
+      wrap.querySelectorAll('.choice-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      customWrap.classList.remove('visible');
+      customTa.value = '';
+      refreshBtn();
+    });
+    wrap.appendChild(btn);
+  });
+
+  // Custom option
+  const customBtn = document.createElement('button');
+  customBtn.className = 'choice-btn' + (isCustom ? ' selected' : '');
+  customBtn.innerHTML = `<span class="choice-dot"></span><span style="color:var(--text-dim)">Napísať vlastnú odpoveď…</span>`;
+  customBtn.addEventListener('click', () => {
+    wrap.querySelectorAll('.choice-btn').forEach(b => b.classList.remove('selected'));
+    customBtn.classList.add('selected');
+    answers[q.key] = CUSTOM_VAL;
+    customWrap.classList.add('visible');
+    setTimeout(() => customTa.focus(), 50);
+    refreshBtn();
+  });
+  wrap.appendChild(customBtn);
+  container.appendChild(wrap);
+
+  const customWrap = document.createElement('div');
+  customWrap.className = 'custom-input-wrap' + (isCustom ? ' visible' : '');
+  const customTa = document.createElement('textarea');
+  customTa.className   = 'custom-text';
+  customTa.placeholder = 'Opíš vlastnými slovami kde si a kam sa chceš dostať...';
+  customTa.value       = (isCustom && answers[q.key + '_custom']) ? answers[q.key + '_custom'] : '';
+  customTa.addEventListener('input', () => {
+    answers[q.key + '_custom'] = customTa.value.trim();
+    refreshBtn();
+  });
+  customWrap.appendChild(customTa);
+  container.appendChild(customWrap);
+}
+
+function refreshBtn() {
+  const q      = questions[current];
+  const btn    = document.getElementById('btnNext');
+  const isLast = current === questions.length - 1;
+
+  let hasVal = false;
+  if (q.type === 'text') {
+    hasVal = !!(answers[q.key] && answers[q.key].length > 1);
+  } else if (q.type === 'dynamic') {
+    const v = answers[q.key];
+    hasVal = !!(v && (v !== CUSTOM_VAL || (answers[q.key + '_custom'] && answers[q.key + '_custom'].length > 1)));
+  } else {
+    const v = answers[q.key];
+    hasVal = !!(v && (v !== CUSTOM_VAL || (answers[q.key + '_custom'] && answers[q.key + '_custom'].length > 1)));
+  }
+
+  btn.textContent = isLast ? 'Zobraziť môj plán →' : 'Ďalej →';
+  btn.classList.toggle('ready', hasVal);
+}
+
+function nextQ() {
+  const q = questions[current];
+  const v = answers[q.key];
+  const hasVal = q.type === 'text'
+    ? !!(v && v.length > 1)
+    : !!(v && (v !== CUSTOM_VAL || (answers[q.key + '_custom'] && answers[q.key + '_custom'].length > 1)));
+  if (!hasVal) return;
+
+  if (current < questions.length - 1) {
+    current++;
+    renderQ();
+  } else {
+    // Last static question done — generate dynamic summary Q
+    generateSummaryQ();
+  }
+}
+
+function prevQ() {
+  if (current > 0) { current--; renderQ(); }
+}
+
+/* ═══════════════════════════════
+   GENERATE DYNAMIC SUMMARY Q
+═══════════════════════════════ */
+async function generateSummaryQ() {
+  document.getElementById('loadingTitle').textContent = 'Pripravujem záverečnú otázku…';
+  document.getElementById('loadingText').textContent  = 'AI analyzuje tvoje odpovede a generuje 4 možnosti. Trvá to pár sekúnd.';
+  showSection('loading');
+
+  const prompt = `Na základe týchto odpovedí vytvor 4 krátke dvojvetné zhrnutia situácie osoby — kde sa nachádza a kam sa chce dostať. Každá možnosť musí byť výstižná, ľudská a odlišná od ostatných. Vráť IBA JSON pole so 4 stringmi, bez akéhokoľvek iného textu.
+
+Meno: ${userData.name}
+Motivácia: ${answers.motivation}
+Financie: ${answers.finances}
+Obavy: ${answers.fears}
+Ciele: ${answers.goals}
+Priority: ${answers.priority}${answers.priority === CUSTOM_VAL ? ' (vlastné: '+answers.priority_custom+')' : ''}
+Budget: ${answers.budget}${answers.budget === CUSTOM_VAL ? ' (vlastné: '+answers.budget_custom+')' : ''}
+
+Príklad formátu (nie obsahu):
+["Zarábam slušne ale peniaze mi strácajú hodnotu a chcem ich chrániť pred infláciou. Hľadám bezpečný a jednoduchý spôsob ako v Bitcoine začať.", "...", "...", "..."]`;
+
+  try {
+    const res = await fetch('/.netlify/functions/claude', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 600,
+        messages: [{ role:'user', content: prompt }]
+      })
+    });
+    const data    = await res.json();
+    const text    = data.content[0].text.trim();
+    const clean   = text.replace(/```json|```/g,'').trim();
+    const options = JSON.parse(clean);
+
+    questions.push({
+      type: 'dynamic',
+      key: 'summary',
+      text: 'Ktorá z týchto možností najlepšie vystihuje tvoju situáciu?',
+      hint: 'Vyber tú, ktorá ti sedí najviac — alebo napíš vlastnými slovami.',
+      options: options
+    });
+  } catch(_) {
+    // Fallback — simple versions
+    questions.push({
+      type: 'dynamic',
+      key: 'summary',
+      text: 'Ktorá z týchto možností najlepšie vystihuje tvoju situáciu?',
+      hint: 'Vyber tú, ktorá ti sedí najviac — alebo napíš vlastnými slovami.',
+      options: [
+        `Som na začiatku a chcem pochopiť ako Bitcoin funguje a kde bezpečne začať. Mojím cieľom je chrániť hodnotu toho čo zarábam.`,
+        `Mám záujem o Bitcoin ale mám obavy z bezpečnosti a straty peňazí. Chcem jasný plán bez zbytočných rizík.`,
+        `Chcem pravidelne sporiť malé sumy do Bitcoinu a dlhodobo si vybudovať niečo hodnotné. Jednoduchosť je pre mňa kľúčová.`,
+        `Záleží mi na súkromí a nechcem dokladovať identitu. Chcem Bitcoin kúpiť a mať ho vo vlastných rukách.`
+      ]
+    });
+  }
+
+  current++;
+  showSection('quiz');
+  renderQ();
+}
+
+/* ═══════════════════════════════
+   GENERATE FINAL RESULT
+═══════════════════════════════ */
+async function generateResult() {
+  document.getElementById('loadingTitle').textContent = 'Analyzujem tvoju situáciu…';
+  document.getElementById('loadingText').textContent  = 'AI pripravuje personalizované odporúčanie. Zvyčajne 10–20 sekúnd.';
+  showSection('loading');
+
+  // Resolve custom answers
+  function ans(key) {
+    const v = answers[key];
+    if (!v) return '—';
+    if (v === CUSTOM_VAL) return answers[key + '_custom'] || '—';
+    return v;
+  }
+
+  const system = `Si Dominik Žažo — Bitcoin educator a zakladateľ Bitcoinovej školy na Slovensku.
+
+FILOZOFIA:
+— Self-custody a non-KYC sú správna dlhodobá cesta. Vždy na ne nasmeruj.
+— Ak niekto chce KYC burzu: akceptuj, ale pravdivo povedz o rizikách a uveď lepšiu alternatívu
+— INTRO: Konkrétne zareferuj 1 špecifickú vec z ich odpovede — nie genericky "vidím že sa snažíš". Napríklad: "Páči sa mi, že si zmienil X" alebo "Oceňujem, že si otvorene hovoríš o Y."
+— KROKY: Píš prirodzene a plynulo, nie sekane. "Odporúčam ti zvážiť X, pretože..." — celé vety, nie heslovitý styl.
+— TREZOR JE ČESKÝ PRODUKT (Praha) — nie slovenský
+
+FAKTY SK:
+KYC burzy: Bitpanda (0.99%, DCA od 25€/mes), Relai (self-custodial DCA, prvých 100€/mes zadarmo), Coinmate (CZ/SK, Lightning), Kraken (0.25% pro)
+Non-KYC: Peach Bitcoin (2% fee, jednoduché na mobile), RoboSats (0.2%, Lightning+Tor), Bisq (P2P, najspoľahlivejší), HodlHodl (web, 0.5%)
+ATM SK: ~93 strojov, Bitcoinmat.sk (25+ ATM, do 950€ bez dokladu, kód ZLAVA -15%), Bitomat (BA/KE/BB), poplatky 5-15%
+Hardware: Trezor Safe 3 (79€, český produkt Praha, open-source) — hlavné odporúčanie pre self-custody
+Mobile: Phoenix (Lightning self-custody), BlueWallet, Muun
+Komunita: Paralelná Polis Bratislava + Košice
+
+PREČO NON-KYC LEPŠIE (do kyc_info):
+1. Leak osobných dát — Coinbase 2024 (69k užívateľov), Ledger 2020 (272k domácich adries uniklo)
+2. Súkromie — burza vie kedy, za koľko a koľko si kupoval, tieto dáta môžu byť zdieľané
+3. Zmena vlády/regulácie — dnes normálne, zajtra môžu prísť reštrikcie na KYC účty
+
+Vráť IBA JSON bez textu pred ani po.`;
+
+  const user = `Meno: ${userData.name}
+Prečo Bitcoin: ${ans('motivation')}
+Financie: ${ans('finances')}
+Obavy: ${ans('fears')}
+Ciele: ${ans('goals')}
+Najdôležitejšie: ${ans('priority')}
+Budget: ${ans('budget')}
+Anonymita/KYC: ${ans('privacy')}
+Skúsenosti: ${ans('experience')}
+Custody: ${ans('custody')}
+Situácia (vlastnými slovami): ${ans('summary')}
+
+JSON:
+{
+  "title": "max 6 slov (slovensky)",
+  "path_type": "exchange_kyc | non_kyc | dca_relai | selfcustody | atm | beginner",
+  "path_label": "krátky popis napr. Self-custody DCA cesta",
+  "metrics": {
+    "cesta_label": "napr. Pravidelné DCA sporenie",
+    "cesta_dovod": "1 veta PREČO táto cesta sedí PRÁVE TEJTO OSOBE",
+    "nastroj_label": "napr. Relai + Trezor Safe 3",
+    "nastroj_dovod": "1 veta prečo tento nástroj — konkrétny dôvod"
+  },
+  "intro": "2-3 vety. Začni menom. Zareferuj 1 konkrétnu vec z ich odpovedí ktorú oceňuješ. Ľudský tón.",
+  "path": "3-4 celé plynulé vety. Najprv SPÔSOB, potom nástroj s dôvodom. Ak KYC: povedz prečo je to pochopiteľné a ihneď spomeň že ideál je self-custody.",
+  "show_kyc_info": true alebo false,
+  "kyc_info": null alebo "2-3 vety o KYC rizikách s konkrétnymi príkladmi. Len ak show_kyc_info=true.",
+  "steps": [
+    "Celá plynulá veta začínajúca Odporúčam ti...",
+    "...", "...", "...", "..."
+  ],
+  "warning": "Konkrétne varovanie pre TÚTO osobu v prirodzenom texte. Začni: Na čo si daj pozor:",
+  "better_path": null alebo "2 vety o lepšej alternatíve — IBA ak hlavná cesta je KYC burza alebo ATM"
+}`;
+
+  try {
+    const res = await fetch('/.netlify/functions/claude', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1300,
+        system,
+        messages: [{ role:'user', content: user }]
+      })
+    });
+    const data  = await res.json();
+    const text  = data.content[0].text.trim();
+    const clean = text.replace(/```json|```/g,'').trim();
+    aiResult = JSON.parse(clean);
+  } catch(e) {
+    console.error(e);
+    aiResult = {
+      title: "Prvý krok k vlastnému Bitcoinu",
+      path_type: "beginner",
+      path_label: "Bezpečný štart pre začiatočníka",
+      metrics: {
+        cesta_label: "Self-custodial DCA",
+        cesta_dovod: "Pravidelné sporenie s plnou kontrolou nad vlastnými peniazmi",
+        nastroj_label: "Relai + Trezor Safe 3",
+        nastroj_dovod: "Bitcoin ide priamo na tvoju peňaženku, prvých 100 € mesačne zadarmo"
+      },
+      intro: `${userData.name}, oceňujem, že si sa rozhodol hľadať jasný smer namiesto toho, aby si sa topil v náhodných zdrojoch z internetu — to nie je samozrejmosť. Tvoja otvorenosť a snaha pochopiť Bitcoin pred tým, ako konáš, sú presne to správne.`,
+      path: `Odporúčam ti začať cestou pravidelného sporenia cez self-custodial aplikáciu, čo znamená, že Bitcoin ide priamo na tvoju vlastnú peňaženku — nie na burzu. Dobrá možnosť v tejto kategórii je napríklad Relai, Bitcoin-only aplikácia, kde prvých 100 € mesačne zadarmo a jednoduché nastavenie. Toto je krok smerom k skutočnému vlastníctvu a dlhodobej slobode.`,
+      show_kyc_info: true,
+      kyc_info: "KYC (Know Your Customer) znamená, že burza zbiera tvoje osobné údaje — meno, adresu, doklad totožnosti. Tieto dáta unikli napríklad z Coinbase v roku 2024 (69-tisíc užívateľov) a z Ledgeru v roku 2020, kedy uniklo 272-tisíc domácich adries. Non-KYC alternatívy sú legálne a jednoduchšie, ako väčšina ľudí myslí.",
+      steps: [
+        "Odporúčam ti zvážiť self-custodial DCA aplikáciu — napríklad Relai, kde Bitcoin chodí priamo na tvoju peňaženku, nie na burzu.",
+        "Nastav si pravidelný mesačný nákup podľa svojho budgetu — aj 30 € mesačne dáva zmysel a je to lepšie než nič.",
+        "Seed phrase (záložnú frázu) si zapíš rukou na papier a uchovaj ju offline — nikdy digitálne, nikdy vo fotke ani emaile.",
+        "Keď nasporíš 300–500 €, odporúčam ti zvážiť Trezor Safe 3 (79 €, český produkt s otvoreným zdrojovým kódom) pre dlhodobé bezpečné uloženie.",
+        "Vzdelávaj sa postupne a snaž sa pochopiť čo robíš a prečo — nie len mechanicky klikať podľa návodu."
+      ],
+      warning: "Na čo si daj pozor: Seed phrase je jediný kľúč k tvojim peniazom a kto ju má, má tvoj Bitcoin. Nikdy ju nezadávaj online, nevkladaj do fotky ani emailu a ak ju stratíš, nikto na svete ti nepomôže — neexistuje zákaznícka podpora ani obnovenie.",
+      better_path: null
+    };
+  }
+
+  sendToBrevo(aiResult.path_type || 'beginner');
+  renderResult(aiResult);
+}
+
+/* ═══════════════════════════════
+   RENDER RESULT
+═══════════════════════════════ */
+function renderResult(r) {
+  document.getElementById('rTitle').textContent = r.title;
+  document.getElementById('rPathBadge').innerHTML = r.path_label
+    ? `<div class="path-badge">📍 ${r.path_label}</div>` : '';
+
+  document.getElementById('rIntro').innerHTML = `
+    <div class="rlabel">Tvoja situácia</div>
+    <div class="rtext">${r.intro}</div>
+  `;
+
+  const m = r.metrics || {};
+  document.getElementById('rMetrics').innerHTML = `
+    <div class="metric-box">
+      <div class="metric-label">Odporúčaná cesta</div>
+      <div class="metric-value">${m.cesta_label || '—'}</div>
+      <div class="metric-reason">${m.cesta_dovod || ''}</div>
+    </div>
+    <div class="metric-box">
+      <div class="metric-label">Odporúčaný nástroj</div>
+      <div class="metric-value">${m.nastroj_label || '—'}</div>
+      <div class="metric-reason">${m.nastroj_dovod || ''}</div>
+    </div>
+  `;
+
+  document.getElementById('rPath').innerHTML = `
+    <div class="rlabel">Odporúčaná cesta</div>
+    <div class="rtext">${r.path}</div>
+  `;
+
+  const kycEl = document.getElementById('rKyc');
+  if (r.show_kyc_info && r.kyc_info) {
+    kycEl.style.display = 'block';
+    kycEl.innerHTML = `
+      <div class="rlabel green">💡 Čo je KYC a prečo na tom záleží</div>
+      <div class="rtext">${r.kyc_info}</div>
+    `;
+  } else kycEl.style.display = 'none';
+
+  const stepsEl = document.getElementById('rSteps');
+  stepsEl.innerHTML = '';
+  (r.steps || []).forEach((step, i) => {
+    const li = document.createElement('li');
+    li.innerHTML = `<span class="step-num">${i+1}</span><span>${step}</span>`;
+    stepsEl.appendChild(li);
+  });
+
+  document.getElementById('rWarn').innerHTML = `
+    <div class="rlabel warn">⚠ Pozor</div>
+    <div class="rtext">${r.warning}</div>
+  `;
+
+  const betterEl = document.getElementById('rBetter');
+  if (r.better_path) {
+    betterEl.style.display = 'block';
+    betterEl.innerHTML = `
+      <div class="rlabel green">💡 Existuje lepšia cesta</div>
+      <div class="rtext">${r.better_path}</div>
+    `;
+  } else betterEl.style.display = 'none';
+
+  // Set email mailto with template
+  const subj = encodeURIComponent('Záujem o Masterclass Bitcoinová škola');
+  const body = encodeURIComponent(
+    `Ahoj Dominik,\n\nvyplnil som tvoj Bitcoin quiz a zaujíma ma Masterclass.\n\nMoja výsledná cesta: ${r.path_label || r.title}\n\nV prípade potreby ma môžeš kontaktovať späť.\n\nVďaka!\n${userData.name}`
+  );
+  document.getElementById('masterBtn').href = `mailto:ahoj@bitcoinovaskola.sk?subject=${subj}&body=${body}`;
+
+  showSection('result');
+}
+
+/* ═══════════════════════════════
+   NEXT Q HANDLER (also for last)
+═══════════════════════════════ */
+function nextQ() {
+  const q = questions[current];
+  const v = answers[q.key];
+  const hasVal = q.type === 'text'
+    ? !!(v && v.length > 1)
+    : !!(v && (v !== CUSTOM_VAL || (answers[q.key + '_custom'] && answers[q.key + '_custom'].length > 1)));
+  if (!hasVal) return;
+
+  if (current < questions.length - 1) {
+    current++;
+    renderQ();
+  } else if (q.type === 'dynamic') {
+    // Last question is the dynamic one — go to final result
+    generateResult();
+  } else {
+    // Last static question — generate dynamic summary Q
+    generateSummaryQ();
+  }
+}
+
+/* ═══════════════════════════════
+   BREVO
+═══════════════════════════════ */
+async function sendToBrevo(resultKey) {
+  try {
+    const p = new URLSearchParams();
+    p.append('EMAIL', userData.email);
+    p.append('FIRSTNAME', userData.name);
+    p.append('RESULT', resultKey);
+    p.append('email_address_check', '');
+    p.append('locale', 'en');
+    p.append('html_type', 'simple');
+    await fetch(BREVO_FORM_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: p.toString()
+    });
+  } catch(_) {}
+}
+</script>
+</body>
+</html>
