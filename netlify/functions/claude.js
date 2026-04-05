@@ -3,36 +3,59 @@ exports.handler = async (event) => {
     return { statusCode: 405, body: 'Method Not Allowed' };
   }
 
-  console.log('Function called, ANTHROPIC_KEY exists:', !!process.env.ANTHROPIC_KEY);
-  console.log('Request body length:', event.body ? event.body.length : 0);
-
   try {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
+    const body = JSON.parse(event.body);
+
+    // Convert Anthropic format to OpenAI format
+    const messages = [];
+    if (body.system) {
+      messages.push({ role: 'system', content: body.system });
+    }
+    for (const msg of body.messages) {
+      messages.push({ role: msg.role, content: msg.content });
+    }
+
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': process.env.ANTHROPIC_KEY,
-        'anthropic-version': '2023-06-01'
+        'Authorization': `Bearer ${process.env.OPENAI_KEY}`
       },
-      body: event.body
+      body: JSON.stringify({
+        model: 'gpt-4o-mini',
+        max_tokens: body.max_tokens || 1200,
+        messages: messages
+      })
     });
 
     const data = await response.json();
-    console.log('Anthropic response status:', response.status);
+
     if (!response.ok) {
-      console.log('Anthropic error:', JSON.stringify(data));
+      console.log('OpenAI error:', JSON.stringify(data));
+      return {
+        statusCode: response.status,
+        body: JSON.stringify(data)
+      };
     }
 
+    // Convert OpenAI response to Anthropic format so frontend works unchanged
+    const anthropicFormat = {
+      content: [{
+        type: 'text',
+        text: data.choices[0].message.content
+      }]
+    };
+
     return {
-      statusCode: response.status,
+      statusCode: 200,
       headers: {
         'Content-Type': 'application/json',
         'Access-Control-Allow-Origin': '*'
       },
-      body: JSON.stringify(data)
+      body: JSON.stringify(anthropicFormat)
     };
   } catch (err) {
-    console.log('Fetch error:', err.message);
+    console.log('Error:', err.message);
     return {
       statusCode: 500,
       body: JSON.stringify({ error: err.message })
